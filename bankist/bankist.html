@@ -1,0 +1,113 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style_bankist.css" />
+    <title>Bankist</title>
+  </head>
+  <body>
+    <nav>
+      <p class="welcome">Log In to get started</p>
+      <img src="logo.png" alt="Logo" class="logo" />
+      <form class="login">
+        <input
+          type="text"
+          placeholder="User"
+          class="login__input login__input--user"
+        />
+        <input
+          type="password"
+          placeholder="PIN"
+          class="login__input login__input--pin"
+        />
+        <button class="login__btn">&rarr;</button>
+      </form>
+    </nav>
+    <main class="app">
+      <!-- Balance -->
+      <div class="balance">
+        <div>
+          <p class="balance__label">Current balance</p>
+          <p class="balance__date">
+            As of <span class="date">05/03/2037</span>
+          </p>
+        </div>
+        <p class="balance__value">$100000</p>
+      </div>
+
+      <!-- movements -->
+      <div class="movements">
+        <div class="movements__row">
+          <div class="movements__type movements__type--deposit">1 Deposit</div>
+          <div class="movements__date">14/04/1994 (2 days back)</div>
+          <div class="movements__value">$1000</div>
+        </div>
+        <div class="movements__row">
+          <div class="movements__type movements__type--withdrawal">
+            1 withdrawal
+          </div>
+          <div class="movements__date">14/04/1994 (1 days back)</div>
+          <div class="movements__value">$100</div>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="summary">
+        <p class="summary__label">In</p>
+        <p class="summary__value summary__value--in">$ 0000</p>
+        <p class="summary__label">Out</p>
+        <p class="summary__label summary__value--out">$100</p>
+        <p class="summary__label">Interest</p>
+        <p class="summary__label summary__value--intrest">$0000</p>
+        <button class="btn--sort">&DoubleUpDownArrow; SORT</button>
+      </div>
+      <!-- Transfer -->
+      <div class="operation operation--transfer">
+        <h2>Transfer money</h2>
+        <form class="form form--transfer">
+          <input type="text" class="form__input form__input--to" />
+          <input type="number" class="form__input form__input--number" />
+          <button class="form-btn form__btn--transfer">&rarr;</button>
+          <label class="form__label">Transfer to </label>
+          <label class="form_label form__laebl--loan_amount">Amount</label>
+        </form>
+      </div>
+      <!-- Request -->
+      <div class="operation operation--loan">
+        <h2>Request LOAN</h2>
+        <form class="form form--loan">
+          <input type="text" class="form__input form__input--loan-amount" />
+          <button class="form-btn form__btn--loan">&rarr;</button>
+          <label class="form__label form__label--loan">Amount</label>
+        </form>
+      </div>
+      <!-- OPERATION CLOSE -->
+      <div class="operation operation--close">
+        <h2>Close account</h2>
+        <form class="form form--close">
+          <input type="text" class="form__input form__input--user" />
+          <input
+            type="password"
+            maxlength="6"
+            class="form__input form__input--pin"
+          />
+          <button class="form__btn form__btn--close">&rarr;</button>
+          <label class="form__label">Confirm user</label>
+          <label class="form__label">Confirm PIN</label>
+        </form>
+      </div>
+
+      <!-- logout-timer -->
+      <p class="logout-timer">
+        Your session will end in next <span class="timer">5:00 min</span>
+      </p>
+    </main>
+    <script src="bankist_script.js"></script>
+  </body>
+</html>
