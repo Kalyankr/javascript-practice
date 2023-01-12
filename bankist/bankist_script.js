@@ -34,16 +34,36 @@ const account4 = {
 const accounts = [account1, account2, account3, account4];
 
 // Elements
+const labelWelcome = document.querySelector(".welcome");
+const labelDate = document.querySelector(".date");
+const labelBalance = document.querySelector(".balance__value");
+const labelSumIn = document.querySelector(".summary__value--in");
+const labelSumOut = document.querySelector(".summary__value--out");
+const labelSumInterest = document.querySelector(".summary__value--interest");
+const labelTimer = document.querySelector(".timer");
+
+const containerApp = document.querySelector(".app");
 const containerMovements = document.querySelector(".movements");
 
-//Implementation
+const btnLogin = document.querySelector(".login__btn");
+const btnTransfer = document.querySelector(".form__btn--transfer");
+const btnLoan = document.querySelector(".form__btn--loan");
+const btnClose = document.querySelector(".form__btn--close");
+const btnSort = document.querySelector(".btn--sort");
+
+const inputLoginUsername = document.querySelector(".login__input--user");
+const inputLoginPin = document.querySelector(".login__input--pin");
+const inputTransferTo = document.querySelector(".form__input--to");
+const inputTransferAmount = document.querySelector(".form__input--amount");
+const inputLoanAmount = document.querySelector(".form__input--loan-amount");
+const inputCloseUsername = document.querySelector(".form__input--user");
+const inputClosePin = document.querySelector(".form__input--pin");
 
 // display movements
-
-const displayMovements = function (movements) {
+const displayMovements = function (account) {
   containerMovements.innerHTML = "";
 
-  movements.forEach(function (mov, i) {
+  account.movements.forEach(function (mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">
@@ -55,8 +75,6 @@ const displayMovements = function (movements) {
   });
 };
 
-displayMovements(account1.movements);
-
 //generate username
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -67,6 +85,65 @@ const createUsernames = function (accs) {
       .join("");
   });
 };
-
 createUsernames(accounts);
-console.log(accounts[1]);
+
+//Total balance
+const calDisplayBalance = function (account) {
+  const balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `$ ${balance}`;
+};
+
+//calucalte summary
+const calDisplaySummary = function (account) {
+  // total deposit
+  const desposit = account.movements
+    .filter((mov) => mov > 0)
+    .reduce((acc, curr) => acc + curr, 0);
+
+  // total withdrawal
+  const withdrawal = account.movements
+    .filter((mov) => mov < 0)
+    .reduce((acc, curr) => acc + curr, 0);
+
+  // total interest
+  const interest = account.movements
+    .filter((mov) => mov > 0)
+    .map((mov) => (mov * account.interestRate) / 100)
+    .reduce((acc, curr) => acc + curr, 0);
+
+  labelSumIn.textContent = `$ ${desposit}`;
+  labelSumOut.textContent = `$ ${Math.abs(withdrawal)}`;
+  labelSumInterest.textContent = `$ ${interest}`;
+};
+
+// Event handler
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  // prevent form from submitting
+  e.preventDefault();
+  currentAccount = accounts.find(
+    (acc) => acc.username === inputLoginUsername.value
+  );
+
+  // check pin
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(" ")[0]
+    }`;
+    containerApp.style.opacity = 100;
+
+    // Clear login input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+    // Display Movements
+    displayMovements(currentAccount);
+
+    // Display Balance
+    calDisplayBalance(currentAccount);
+
+    //Display Summary
+    calDisplaySummary(currentAccount);
+  }
+});
