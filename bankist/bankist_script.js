@@ -54,7 +54,7 @@ const btnSort = document.querySelector(".btn--sort");
 const inputLoginUsername = document.querySelector(".login__input--user");
 const inputLoginPin = document.querySelector(".login__input--pin");
 const inputTransferTo = document.querySelector(".form__input--to");
-const inputTransferAmount = document.querySelector(".form__input--amount");
+const inputTransferAmount = document.querySelector(".form__input--number");
 const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
@@ -75,22 +75,10 @@ const displayMovements = function (account) {
   });
 };
 
-//generate username
-const createUsernames = function (accs) {
-  accs.forEach(function (acc) {
-    acc.username = acc.owner
-      .toLowerCase()
-      .split(" ")
-      .map((name) => name[0])
-      .join("");
-  });
-};
-createUsernames(accounts);
-
 //Total balance
 const calDisplayBalance = function (account) {
-  const balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `$ ${balance}`;
+  account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `$ ${account.balance}`;
 };
 
 //calucalte summary
@@ -116,6 +104,29 @@ const calDisplaySummary = function (account) {
   labelSumInterest.textContent = `$ ${interest}`;
 };
 
+//generate username
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(" ")
+      .map((name) => name[0])
+      .join("");
+  });
+};
+createUsernames(accounts);
+
+const updateUI = function (account) {
+  // Display Movements
+  displayMovements(account);
+
+  // Display Balance
+  calDisplayBalance(account);
+
+  //Display Summary
+  calDisplaySummary(account);
+};
+
 // Event handler
 let currentAccount;
 
@@ -137,13 +148,47 @@ btnLogin.addEventListener("click", function (e) {
     // Clear login input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
-    // Display Movements
-    displayMovements(currentAccount);
-
-    // Display Balance
-    calDisplayBalance(currentAccount);
-
-    //Display Summary
-    calDisplaySummary(currentAccount);
+    updateUI(currentAccount);
   }
+});
+
+// Transfer amount
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+
+  // get reciver account
+  const reciverAccount = accounts.find(
+    (acc) => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = "";
+
+  if (
+    amount > 0 &&
+    reciverAccount &&
+    amount <= currentAccount.balance &&
+    reciverAccount?.username !== currentAccount.username
+  ) {
+    //transfer the money
+    currentAccount.movements.push(-amount);
+    reciverAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+});
+
+// Implement Close Account
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = "Log In to get started";
+  }
+  inputCloseUsername.value = inputClosePin.value = "";
 });
