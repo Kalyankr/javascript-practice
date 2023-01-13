@@ -70,6 +70,18 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+// format movement dates
+const formatMovementDates = function (date, locale) {
+  const calDaysPassed = function (date1, date2) {
+    return Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+  };
+
+  const daysPassed = calDaysPassed(new Date(), date);
+  if (daysPassed === 0) return "Today";
+  if (daysPassed === 1) return "Yesterday";
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+  return new Intl.DateTimeFormat(locale).format(date);
+};
 // display movements
 const displayMovements = function (account, sort) {
   containerMovements.innerHTML = "";
@@ -82,9 +94,7 @@ const displayMovements = function (account, sort) {
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     let date = new Date(account.movementsDates[i]);
-    let displayDate = `${
-      date.getMonth() + 1
-    }/${date.getDate()}/${date.getFullYear()}`;
+    let displayDate = formatMovementDates(date, account.locale);
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">
       ${i + 1} ${type}
@@ -166,6 +176,21 @@ btnLogin.addEventListener("click", function (e) {
     }`;
     containerApp.style.opacity = 100;
 
+    // Updtae Current Date
+    let date = new Date();
+    let options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    };
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(date);
+
     // Clear login input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
@@ -243,9 +268,3 @@ btnSort.addEventListener("click", function (e) {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
-
-// current Date
-const now = new Date();
-let date = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
-let time = `${now.getHours()}:${now.getMinutes()}`;
-labelDate.textContent = `${date} ${time}`;
