@@ -82,6 +82,14 @@ const formatMovementDates = function (date, locale) {
   if (daysPassed <= 7) return `${daysPassed} days ago`;
   return new Intl.DateTimeFormat(locale).format(date);
 };
+
+// format Aount to Intl
+const formatCur = function (number, locale, curr) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: curr,
+  }).format(number);
+};
 // display movements
 const displayMovements = function (account, sort) {
   containerMovements.innerHTML = "";
@@ -95,12 +103,13 @@ const displayMovements = function (account, sort) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     let date = new Date(account.movementsDates[i]);
     let displayDate = formatMovementDates(date, account.locale);
+    const formatedMov = formatCur(mov, account.locale, account.currency);
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">
       ${i + 1} ${type}
     </div>
     <div class='movements_date'>${displayDate}</div>
-    <div class="movements__value">$ ${mov.toFixed(2)}</div>
+    <div class="movements__value">${formatedMov}</div>
   </div>`;
     containerMovements.insertAdjacentHTML("afterbegin", html);
   });
@@ -109,7 +118,11 @@ const displayMovements = function (account, sort) {
 //Total balance
 const calDisplayBalance = function (account) {
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `$ ${account.balance.toFixed(2)}`;
+  labelBalance.textContent = formatCur(
+    account.balance,
+    account.locale,
+    account.currency
+  );
 };
 
 //calucalte summary
@@ -130,9 +143,21 @@ const calDisplaySummary = function (account) {
     .map((mov) => (mov * account.interestRate) / 100)
     .reduce((acc, curr) => acc + curr, 0);
 
-  labelSumIn.textContent = `$ ${desposit.toFixed(2)}`;
-  labelSumOut.textContent = `$ ${Math.abs(withdrawal.toFixed(2))}`;
-  labelSumInterest.textContent = `$ ${interest.toFixed(2)}`;
+  labelSumIn.textContent = formatCur(
+    desposit,
+    account.locale,
+    account.currency
+  );
+  labelSumOut.textContent = formatCur(
+    withdrawal,
+    account.locale,
+    account.currency
+  );
+  labelSumInterest.textContent = formatCur(
+    interest,
+    account.locale,
+    account.currency
+  );
 };
 
 //generate username
@@ -158,8 +183,31 @@ const updateUI = function (account) {
   calDisplaySummary(account);
 };
 
+// Logout Timer
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // in each call print the remaining time
+    labelTimer.textContent = `${min}:${sec}`;
+    // when timer goes to 0 logout user i.e set App Visability to 0
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = "Log in to get started";
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  };
+  // set timmer to 5min
+  let time = 300;
+  // call the timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
 // Event handler
-let currentAccount;
+let currentAccount, timer;
 
 btnLogin.addEventListener("click", function (e) {
   // prevent form from submitting
@@ -194,6 +242,11 @@ btnLogin.addEventListener("click", function (e) {
     // Clear login input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
+    // set timer
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogOutTimer();
     updateUI(currentAccount);
   }
 });
@@ -224,6 +277,8 @@ btnTransfer.addEventListener("click", function (e) {
     currentAccount.movementsDates.push(new Date().toISOString());
     reciverAccount.movementsDates.push(new Date().toISOString());
     updateUI(currentAccount);
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -258,6 +313,8 @@ btnLoan.addEventListener("click", function (e) {
     currentAccount.movementsDates.push(new Date().toISOString());
     // Display UI
     updateUI(currentAccount);
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
