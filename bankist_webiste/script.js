@@ -15,12 +15,11 @@ const openModal = function (e) {
 };
 
 const closeModal = function (e) {
-  e.preventDefault();
   modal.classList.add("hidden");
   overlay.classList.add("hidden");
 };
 
-btnsOpenModal.forEach((modal) => modal.addEventListener("click", openModal));
+btnsOpenModal.forEach((btn) => btn.addEventListener("click", openModal));
 
 btnCloseModal.addEventListener("click", closeModal);
 overlay.addEventListener("click", closeModal);
@@ -29,4 +28,17 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape" && !modal.classList.contains("hidden")) {
     closeModal();
   }
+});
+
+// implememt smooth scrolling
+const section1 = document.querySelector("#section--1");
+const btnScrollTo = document.querySelector(".btn--scroll-to");
+btnScrollTo.addEventListener("click", function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  window.scrollTo({
+    left: s1coords.left + window.pageXOffset,
+    top: s1coords.top + window.pageYOffset,
+    behavior: "smooth",
+  });
+  section1.scrollIntoView({ behavior: "smooth" });
 });
