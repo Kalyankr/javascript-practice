@@ -1,18 +1,32 @@
-// const arr = [101, -222, 333, -444, 555, -666, 777, -888];
+class User {
+  constructor(fullName, age) {
+    this.fullName = fullName;
+    this.age = age;
+  }
 
-// arr.forEach((mve) => {
-//   if (mve > 0) {
-//     console.log(`you deposited ${mve}`);
-//   } else console.log(`you withdraw ${Math.abs(mve)}`);
-// });
+  welcome() {
+    console.log(`hello ${this.fullName}`);
+  }
 
-const currencies = new Map([
-  ["USA", "USA Dollar"],
-  ["IND", "Rupee"],
-  ["EUR", "Euro"],
-]);
+  calAge() {
+    console.log(2023 - this.age);
+  }
+  // setter
+  set fullName(name) {
+    if (name.includes(" ")) this._fullName = name;
+    else alert(`${name} is not fullname`);
+  }
+  // getter
+  get fullName() {
+    return this._fullName;
+  }
+  // static
+  static hey() {
+    console.log(`Hey there`);
+  }
+}
 
-console.log(currencies);
-currencies.forEach((value, key, map) => {
-  console.log(`you withdraw ${value} of ${key}`);
-});
+const kalyan = new User("kalyan Reddy", 1994);
+kalyan.welcome();
+kalyan.calAge();
+User.hey();
