@@ -30,3 +30,32 @@ const kalyan = new User("kalyan Reddy", 1994);
 kalyan.welcome();
 kalyan.calAge();
 User.hey();
+
+//
+class Car {
+  constructor(make, speed) {
+    this.name = make;
+    this.speed = speed;
+  }
+  accelerate() {
+    this.speed += 10;
+    console.log(`${this.make} is going at ${this.speed} km/hr`);
+  }
+  brake() {
+    this.speed -= 5;
+    console.log(`${this.make} is going at ${this.speed} km/hr`);
+  }
+
+  get speedUS() {
+    return this.speed / 1.6;
+  }
+  set speedUS(speed) {
+    this.speed * 1.6;
+  }
+}
+
+const ford = new Car("ford", 120);
+console.log(ford.speedUS);
+
+ford.speedUS = 50;
+console.log(ford.speed);
